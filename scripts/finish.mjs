@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Step 6: put the take's own sound back, so lips and steps stay in sync, and join the parts into one clip.
+// Step 5: put the take's own sound back, so lips and steps stay in sync, and join the parts into one clip.
 //   node finish.mjs --dir work/my-take --tag v1 [--res 720p] [--trim 7.6] [--keep-audio]
 // Every part is stretched back to its source part's exact length first, so versions line up with the take frame for
 // frame. --trim cuts the clip at that second (use the same point on every version when check.mjs reports tail drift).

@@ -8,7 +8,7 @@ A Claude skill that changes one thing in a video and keeps the rest of the shot.
 
 ![One 8 s take and three versions of it: the mug swapped for a can, the room recast as a Tokyo ramen bar, and the shot restyled as anime](demo.jpg)
 
-Every edit starts as a cheap 480p draft. It's checked against the take for jumps, drift, frozen frames and edits that changed nothing before you pay for the full render. Then the take's own sound goes back on, so lips and steps stay in sync.
+It gets each edit right in one render. You try the change on a still of the first frame, which costs a few credits, and the video renders once at full resolution. The render is checked against the take for jumps, drift, frozen frames and edits that changed nothing. Then the take's own sound goes back on, so lips and steps stay in sync.
 
 ## Install
 
@@ -26,9 +26,9 @@ Then ask Claude in plain words:
 ## What it does
 
 1. **Probe and prep** (`prep.mjs`): reads the length, frame rate, size and sound. It cuts the take into parts of at most 10 s and under 10 MB, which is what the edit models take.
-2. **Target frame** (`target.mjs`): the take's real first frame with only the change made, using an image model and your reference pictures. It's the strongest steer the video model gets.
-3. **480p draft** (`edit.mjs`): `seedance-2.5-edit` by default, with `genjutsu-restyle`, `genjutsu-object-swap` and `kling-o3-edit` as options. It prints the price and renders nothing until you say yes.
-4. **Check** (`check.mjs`): scores the draft against the take, then makes a contact sheet so you can look at hands, faces, brand marks and text.
+2. **Target frame** (`target.mjs`): the take's real first frame with only the change made, using an image model and your reference pictures. It costs a few credits, so this is where you try things until the change looks right. It's also the strongest steer the video model gets.
+3. **Render** (`edit.mjs`): one render at 720p (or 1080p). It uses `seedance-2.5-edit` by default, with `kling-o3-edit` (about a sixth of the price), `genjutsu-restyle` and `genjutsu-object-swap` as options. It prints the price and renders nothing until you say yes.
+4. **Check** (`check.mjs`): scores the render against the take, then makes a contact sheet so you can look at hands, faces, brand marks and text. Only a render that fails is redone.
 
    | Check | Fails when |
    |---|---|
@@ -40,19 +40,18 @@ Then ask Claude in plain words:
    | tail drift | the last frames wander (it suggests a trim point) |
    | frozen frames | it stalls while the take moves |
 
-5. **Finals** (`edit.mjs --res 720p|1080p`): only the drafts that pass are rendered at full resolution.
-6. **Finish** (`finish.mjs`): restores the take's sound, lines every version up with the take frame for frame, and joins the parts.
-7. **Reel** (`reel.mjs`): the take, then each version, labelled, ready to post.
+5. **Finish** (`finish.mjs`): restores the take's sound, lines every version up with the take frame for frame, and joins the parts.
+6. **Reel** (`reel.mjs`): the take, then each version, labelled, ready to post.
 
 ## What it costs
 
-These are Darkwoods credits for an 8 s clip, as quoted on 2026-10-24:
+These are Darkwoods credits for one 8 s render, as quoted on 2026-10-24. One credit is one cent.
 
-| Model | 480p draft | 720p final |
+| Model | 720p | 1080p |
 |---|---|---|
-| `seedance-2.5-edit` | 246 | 533 |
-| `genjutsu-restyle` | — | 463 |
-| `kling-o3-edit` | — | 86 |
+| `seedance-2.5-edit` | 533 | 1,312 |
+| `genjutsu-restyle` | 463 | 1,110 |
+| `kling-o3-edit` | 86 | 114 |
 
 A target frame is about 2–7 credits. The check runs locally and costs nothing.
 

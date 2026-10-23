@@ -1,8 +1,9 @@
 #!/usr/bin/env node
-// Steps 3 and 5: render an edit of one part. A 480p draft first; the full-resolution final only for drafts that pass
-// check.mjs. Without --yes it prints the price and stops, so the cost is seen before anything is spent.
+// Step 3: render the edit of one part once, at the final resolution (720p unless --res says otherwise). Get the target
+// frame right first (target.mjs): it's the cheap place to try things. Without --yes it prints the price and stops, so
+// the cost is seen before anything is spent.
 //   node edit.mjs --dir work/my-take --part 1 --mode swap|recast|restyle --change "..." [--refs a.png=label,...]
-//                 [--target] [--style "Cel-Shaded CG Anime"] [--model ...] [--res 480p|720p|1080p] [--tag v1] [--yes]
+//                 [--target] [--style "Cel-Shaded CG Anime"] [--model ...] [--res 720p|1080p] [--tag v1] [--yes]
 // Modes (defaults):
 //   swap     one element changes (a product, prop, sign, outfit), the person, light and camera stay: seedance-2.5-edit
 //   recast   keep the performance and camera, change who or where: seedance-2.5-edit
@@ -15,9 +16,9 @@ import * as dw from './lib/dw.mjs';
 
 const has = (k) => process.argv.includes(`--${k}`);
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > 0 && !String(process.argv[i + 1]).startsWith('--') ? process.argv[i + 1] : d; };
-const dir = arg('dir'), part = Number(arg('part', 1)), mode = arg('mode', 'swap'), change = arg('change'), tag = arg('tag', 'v1'), res = arg('res', '480p'), style = arg('style');
+const dir = arg('dir'), part = Number(arg('part', 1)), mode = arg('mode', 'swap'), change = arg('change'), tag = arg('tag', 'v1'), res = arg('res', '720p'), style = arg('style');
 const id = arg('model', mode === 'restyle' && style ? 'genjutsu-restyle' : 'seedance-2.5-edit');
-if (!dir || (!change && !style)) { console.error('usage: edit.mjs --dir work/<name> --part 1 --mode swap|recast|restyle --change "..." [--refs a.png=label] [--target] [--res 480p] [--tag v1] [--yes]'); process.exit(2); }
+if (!dir || (!change && !style)) { console.error('usage: edit.mjs --dir work/<name> --part 1 --mode swap|recast|restyle --change "..." [--refs a.png=label] [--target] [--res 720p] [--tag v1] [--yes]'); process.exit(2); }
 const man = JSON.parse(readFileSync(join(dir, 'recast.json'), 'utf8'));
 const p = man.parts.find((x) => x.n === part);
 if (!p) { console.error(`no part ${part} in ${dir}/recast.json`); process.exit(1); }

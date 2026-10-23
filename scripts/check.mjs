@@ -1,6 +1,6 @@
 #!/usr/bin/env node
-// Step 4: measure a render against its source part, before paying for the final.
-//   node check.mjs --dir work/my-take --file part-1-v1-480p.mp4 [--mode swap|recast|restyle]
+// Step 4: measure the render against its source part before you use it.
+//   node check.mjs --dir work/my-take --file part-1-v1-720p.mp4 [--mode swap|recast|restyle]
 //   node check.mjs --a source.mp4 --b render.mp4 [--mode swap]           (any two clips)
 // Scores, all from frames sampled at 12 fps and shrunk to 160 px wide, in grey:
 //   length          the render is as long as the source (within 5%; one a few percent short is compared on the take's timeline)
@@ -25,7 +25,7 @@ if (dir) {
   part = man.parts.find((x) => x.n === (v?.part ?? Number((f || '').match(/^part-(\d+)/)?.[1] || 1)));
   A = join(dir, part.file); B = join(dir, f);
 }
-if (!A || !B || !existsSync(A) || !existsSync(B)) { console.error('usage: check.mjs --dir work/<name> --file part-1-v1-480p.mp4 | --a source.mp4 --b render.mp4'); process.exit(2); }
+if (!A || !B || !existsSync(A) || !existsSync(B)) { console.error('usage: check.mjs --dir work/<name> --file part-1-v1-720p.mp4 | --a source.mp4 --b render.mp4'); process.exit(2); }
 const kind = mode || man?.versions.find((x) => join(dir, x.file) === B)?.mode || 'swap';
 
 const probe = (f) => JSON.parse(execFileSync('ffprobe', ['-v', 'error', '-select_streams', 'v:0', '-show_entries', 'stream=width,height:format=duration', '-of', 'json', f], { encoding: 'utf8' }));
