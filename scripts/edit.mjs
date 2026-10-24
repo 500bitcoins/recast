@@ -4,10 +4,11 @@
 // the cost is seen before anything is spent.
 //   node edit.mjs --dir work/my-take --part 1 --mode swap|recast|restyle --change "..." [--refs a.png=label,...]
 //                 [--target] [--style "Cel-Shaded CG Anime"] [--model ...] [--res 720p|1080p] [--tag v1] [--yes]
-// Modes (defaults):
+// Modes (defaults, from a side-by-side test on one 8 s take, 2026-10-24):
 //   swap     one element changes (a product, prop, sign, outfit), the person, light and camera stay: seedance-2.5-edit
-//   recast   keep the performance and camera, change who or where: seedance-2.5-edit
-//   restyle  keep the motion and framing, change the whole look: genjutsu-restyle (--style, 20 presets)
+//            (kling-o3-edit kept the old object's shape: the mug's handle on the new can)
+//   recast   keep the performance and camera, change who or where: kling-o3-edit (a sixth of seedance's price)
+//   restyle  keep the motion and framing, change the whole look: kling-o3-edit, or genjutsu-restyle with --style
 // --target uses part-N-<tag>-target.png (target.mjs) as the picture of the first frame after the edit.
 // Writes part-N-<tag>-<res>.mp4 and records the version in recast.json.
 import { readFileSync, writeFileSync, existsSync } from 'node:fs';
@@ -17,7 +18,7 @@ import * as dw from './lib/dw.mjs';
 const has = (k) => process.argv.includes(`--${k}`);
 const arg = (k, d) => { const i = process.argv.indexOf(`--${k}`); return i > 0 && !String(process.argv[i + 1]).startsWith('--') ? process.argv[i + 1] : d; };
 const dir = arg('dir'), part = Number(arg('part', 1)), mode = arg('mode', 'swap'), change = arg('change'), tag = arg('tag', 'v1'), res = arg('res', '720p'), style = arg('style');
-const id = arg('model', mode === 'restyle' && style ? 'genjutsu-restyle' : 'seedance-2.5-edit');
+const id = arg('model', mode === 'restyle' && style ? 'genjutsu-restyle' : mode === 'swap' ? 'seedance-2.5-edit' : 'kling-o3-edit');
 if (!dir || (!change && !style)) { console.error('usage: edit.mjs --dir work/<name> --part 1 --mode swap|recast|restyle --change "..." [--refs a.png=label] [--target] [--res 720p] [--tag v1] [--yes]'); process.exit(2); }
 const man = JSON.parse(readFileSync(join(dir, 'recast.json'), 'utf8'));
 const p = man.parts.find((x) => x.n === part);
@@ -26,14 +27,14 @@ if (!p) { console.error(`no part ${part} in ${dir}/recast.json`); process.exit(1
 const m = await dw.model('video', id), media = m.media || {};
 if (!(media.generation?.resolutions || [res]).includes(res)) { console.error(`${id} renders at ${media.generation.resolutions.join(', ')}, not ${res}`); process.exit(1); }
 const vref = media.references?.video;
-if (vref && (p.seconds < (vref.min_seconds ?? 0) || p.seconds > (vref.max_seconds ?? 99))) { console.error(`${id} takes ${vref.min_seconds}–${vref.max_seconds} s clips; part ${part} is ${p.seconds} s (re-run prep.mjs with another --part)`); process.exit(1); }
+if (vref && (p.seconds < (vref.min_seconds ?? 0) || p.seconds > (vref.max_seconds ?? 99))) { console.error(`${id} takes ${vref.min_seconds}–${vref.max_seconds} s clips; part ${part} is ${p.seconds} s (re-run prep.mjs with another --part, or pick another --model)`); process.exit(1); }
 
 const refs = [{ file: join(dir, p.file), label: 'source video: keep its performance, timing, lip movements and camera exactly' }];
 const target = join(dir, `part-${part}-${tag}-target.png`);
 if (has('target')) { if (!existsSync(target)) { console.error(`no ${target}: run target.mjs first`); process.exit(1); } refs.push({ file: target, label: 'target first frame: exactly how the edited shot looks' }); }
 for (const s of (arg('refs', '') || '').split(',').filter(Boolean)) { const [file, label] = s.split('='); refs.push({ file, label: `reference: ${label || 'the new element'}` }); }
 const maxImg = media.references?.image?.max_count ?? 0, imgs = refs.filter((r) => dw.typeOf(r.file) === 'image').length;
-if (imgs > maxImg) { console.error(`${id} takes at most ${maxImg} reference pictures, got ${imgs}`); process.exit(1); }
+if (imgs > maxImg) { console.error(`${id} takes at most ${maxImg} reference pictures, got ${imgs} (or pick another --model)`); process.exit(1); }
 
 const keep = 'Keep everything else identical to the source video: the performance, facial expressions, lip movements and speech timing, hand motion, camera movement, framing, lighting and background. Do not add, remove or move anything else. Same length, no cuts.';
 const ask = {

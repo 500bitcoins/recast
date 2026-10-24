@@ -27,7 +27,7 @@ Then ask Claude in plain words:
 
 1. **Probe and prep** (`prep.mjs`): reads the length, frame rate, size and sound. It cuts the take into parts of at most 10 s and under 10 MB, which is what the edit models take.
 2. **Target frame** (`target.mjs`): the take's real first frame with only the change made, using an image model and your reference pictures. It costs a few credits, so this is where you try things until the change looks right. It's also the strongest steer the video model gets.
-3. **Render** (`edit.mjs`): one render at 720p (or 1080p). It uses `seedance-2.5-edit` by default, with `kling-o3-edit` (about a sixth of the price), `genjutsu-restyle` and `genjutsu-object-swap` as options. It prints the price and renders nothing until you say yes.
+3. **Render** (`edit.mjs`): one render at 720p (or 1080p). Swaps go to `seedance-2.5-edit`. New places, people and styles go to `kling-o3-edit`, about a sixth of the price. `genjutsu-restyle` and `genjutsu-object-swap` are options. It prints the price and renders nothing until you say yes.
 4. **Check** (`check.mjs`): scores the render against the take, then makes a contact sheet so you can look at hands, faces, brand marks and text. Only a render that fails is redone.
 
    | Check | Fails when |
@@ -54,5 +54,7 @@ These are Darkwoods credits for one 8 s render, as quoted on 2026-10-24. One cre
 | `kling-o3-edit` | 86 | 114 |
 
 A target frame is about 2–7 credits. The check runs locally and costs nothing.
+
+Why those defaults: on the demo take, Kling matched Seedance on the ramen bar and the anime restyle, and followed the take's motion more closely. On the can swap it kept the mug's handle. So swaps go to Seedance and everything else to Kling. With those defaults the whole demo above costs 782 credits.
 
 MIT licence.

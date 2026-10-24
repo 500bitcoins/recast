@@ -1,6 +1,6 @@
 ---
 name: recast
-description: Change one thing in a video and keep the rest of the shot. Swap a product, prop, sign or outfit; recast who or where while keeping the performance, lip sync and camera; or restyle the whole shot (anime, 3D, stop motion). Gets the change right on a still of the first frame for a few credits, renders the video once with the Darkwoods API (seedance-2.5-edit, genjutsu, kling), then checks the render against the take. Use when asked to "/recast", swap something in a video, make versions of a clip, change the location or person in a shot, or restyle a video.
+description: Change one thing in a video and keep the rest of the shot. Swap a product, prop, sign or outfit; recast who or where while keeping the performance, lip sync and camera; or restyle the whole shot (anime, 3D, stop motion). Gets the change right on a still of the first frame for a few credits, renders the video once with the Darkwoods API (kling-o3-edit for new places, people and styles, seedance-2.5-edit for swaps), then checks the render against the take. Use when asked to "/recast", swap something in a video, make versions of a clip, change the location or person in a shot, or restyle a video.
 ---
 
 # Recast
@@ -24,13 +24,13 @@ It reads the length, frame rate, size and sound. It cuts the take into equal par
 | Mode | What changes | What stays | Model (default) |
 |---|---|---|---|
 | `swap` | one element: a product, prop, sign, outfit | the person, light, camera | `seedance-2.5-edit` |
-| `recast` | who or where | the performance, lip sync, camera | `seedance-2.5-edit` |
-| `restyle` | the whole look | motion and framing | `genjutsu-restyle` with `--style` |
+| `recast` | who or where | the performance, lip sync, camera | `kling-o3-edit` |
+| `restyle` | the whole look | motion and framing | `kling-o3-edit`, or `genjutsu-restyle` with `--style` |
 
 - **Writing the change:** one plain sentence that names the old thing and the new one: "swap the white mug for the matte black can in the reference". Vague changes drift.
 - **References:** pass product, outfit, person or place pictures as `--refs file.png=what it is`. Up to 30 for seedance, 8 for genjutsu, 4 for kling.
-- **Restyle styles:** Cel-Shaded CG Anime, Hand-Painted Cel Animation, Felt Puppet Stop Motion, Rounded Toy CGI, Painterly Cinematic 3D, Knitted Yarn World, Retro Game 3D, Nighttime Anime Pixel Art, and 12 more. The list is in `GET /v1/models?modality=video` under genjutsu-restyle. You can also describe a style in `--change` and keep seedance.
-- **Cheaper model:** `kling-o3-edit` costs about a sixth as much as seedance: 86 credits for 8 s at 720p against 533. It takes 3–10 s clips and up to 4 pictures. `genjutsu-object-swap` handles 4–60 s clips in one go.
+- **Restyle styles:** Cel-Shaded CG Anime, Hand-Painted Cel Animation, Felt Puppet Stop Motion, Rounded Toy CGI, Painterly Cinematic 3D, Knitted Yarn World, Retro Game 3D, Nighttime Anime Pixel Art, and 12 more. The list is in `GET /v1/models?modality=video` under genjutsu-restyle. Or describe the style in `--change` and it goes to kling.
+- **Why these models:** on the same 8 s take, `kling-o3-edit` matched `seedance-2.5-edit` on a new place and an anime restyle, and followed the take's motion more closely, for 86 credits against 533. On a swap it kept the old object's shape (the new can got the mug's handle), so swaps go to seedance. Kling takes 3–10 s clips and up to 4 pictures, seedance 2–15 s and up to 30. `--model` overrides the default, and `genjutsu-object-swap` handles 4–60 s clips in one go.
 
 ## 3. Get the target frame right, then render once
 
@@ -71,7 +71,7 @@ It scores the render against the source part:
 
 The verdict is **pass**, **check** (usable, but look first) or **fail**.
 
-Then open the contact sheet (`checks/<file>-sheet.png`: source on top, render below, 6 moments) and look yourself. Check that hands are whole, faces and identity are unchanged, brand marks are the right ones and text reads correctly.
+Then open the contact sheet (`checks/<file>-sheet.png`: source on top, render below, 6 moments) and look yourself. Check that hands are whole, faces and identity are unchanged, a swapped object has its own shape and not the old one's, brand marks are the right ones and text reads correctly. The scores can't see shapes.
 
 Only a fail costs a second render. Before paying for it, find the cause and change one thing: tighten the sentence, add or replace a reference, or redo the target frame. Tell the user what failed and what you changed.
 
