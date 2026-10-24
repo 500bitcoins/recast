@@ -55,6 +55,6 @@ These are Darkwoods credits for one 8 s render, as quoted on 2026-10-24. One cre
 
 A target frame is about 2–7 credits. The check runs locally and costs nothing.
 
-Why those defaults: on the demo take, Kling matched Seedance on the ramen bar and the anime restyle, and followed the take's motion more closely. On the can swap it kept the mug's handle. So swaps go to Seedance and everything else to Kling. With those defaults the whole demo above costs 782 credits.
+Why those defaults: on the demo take, Kling matched Seedance on the ramen bar and the anime restyle, and followed the take's motion more closely. On the can swap it kept the mug's handle. So swaps go to Seedance and everything else to Kling. With those defaults the whole demo above costs 781 credits.
 
 MIT licence.
